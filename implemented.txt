@@ -1,0 +1,39 @@
+==== LDA (completed) ====
+LDA #
+LDA $ (Z)
+LDA $ (A)
+LDA $, X (Z)
+LDA $, X (A)
+LDA $, Y (A)
+LDA ($, X)
+LDA ($), Y
+
+==== LDX (completed) ====
+LDX #
+LDX $ (Z)
+LDX $ (A)
+LDX $, Y (Z)
+LDX $, Y (A)
+
+==== LDY (completed) ====
+LDY #
+LDY $ (Z)
+LDY $ (A)
+LDY $, X (Z)
+LDY $, X (A)
+
+==== STA (completed) ====
+STA $ (Z)
+STA $ (A)
+STA $, X (Z)
+STA $, X (A)
+STA ($, X)
+STA ($), Y
+
+==== INC (completed) ====
+INX
+INY
+INC $ (Z)
+INC $ (A)
+INC $, X (Z)
+INC $, X (A)
