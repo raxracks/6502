@@ -30,6 +30,16 @@ STA $, X (A)
 STA ($, X)
 STA ($), Y
 
+==== STX (completed) ====
+STX $ (Z)
+STX $, Y (Z)
+STX $ (A)
+
+==== STY (completed) ====
+STY $ (Z)
+STY $, X (Z)
+STY $ (A)
+
 ==== INC (completed) ====
 INX
 INY
@@ -37,3 +47,13 @@ INC $ (Z)
 INC $ (A)
 INC $, X (Z)
 INC $, X (A)
+
+==== TRANSFER (completed) ====
+TAX
+TAY
+TSX
+TXA
+TXS
+TYA
+
+NOP

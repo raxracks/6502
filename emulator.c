@@ -51,6 +51,11 @@ int main(int argc, char** argv) {
 				memory[memory[one + cpu.X]] = cpu.A;
 				cpu.PC++;
 				break;
+			case 0x4:
+				printf(" ∟ STY $%02X\n", one);
+				memory[one] = cpu.Y;
+				cpu.PC++;
+				break;
 			case 0x5:
 				printf(" ∟ STA $%02X\n", one);
 				memory[one] = cpu.A;
@@ -60,6 +65,15 @@ int main(int argc, char** argv) {
 				printf(" ∟ STX $%02X\n", one);
 				memory[one] = cpu.X;
 				cpu.PC++;
+				break;
+			case 0xA:
+				printf(" ∟ TXA\n");
+				cpu.A = cpu.X;
+				break;
+			case 0xC:
+				printf(" ∟ STY $%04X\n", word);
+				memory[word] = cpu.Y;
+				cpu.PC += 2;
 				break;
 			case 0xD:
 				printf(" ∟ STA $%04X\n", word);
@@ -80,16 +94,34 @@ int main(int argc, char** argv) {
 				memory[memory[one] + cpu.Y] = cpu.A;
 				cpu.PC++;
 				break;
+			case 0x4:
+				printf(" ∟ STY $%02X, X\n", one);
+				memory[one + cpu.X] = cpu.Y;
+				cpu.PC++;
+				break;
 
 			case 0x5:
 				printf(" ∟ STA $%02X, X\n", word);
 				memory[one + cpu.X] = cpu.A;
 				cpu.PC++;
 				break;
+			case 0x6:
+				printf(" ∟ STX $%02X, Y\n", one);
+				memory[one + cpu.Y] = cpu.X;
+				cpu.PC++;
+				break;
+			case 0x8:
+				printf(" ∟ TYA\n");
+				cpu.A = cpu.Y;
+				break;
 			case 0x9:
 				printf(" ∟ STA $%04X, Y\n", word);
 				memory[word + cpu.Y] = cpu.A;
 				cpu.PC += 2;
+				break;
+			case 0xA:
+				printf("TXS\n");
+				cpu.SP = cpu.X;
 				break;
 			case 0xD:
 				printf(" ∟ STA $%04X, X\n", word);
@@ -132,10 +164,18 @@ int main(int argc, char** argv) {
 				cpu.X = memory[one];
 				cpu.PC++;
 				break;
+			case 0x8:
+				printf(" ∟ TAY\n");
+				cpu.Y = cpu.A;
+				break;
 			case 0x9:
 				printf(" ∟ LDA #$%02X\n", one);
 				cpu.A = one;
 				cpu.PC++;
+				break;
+			case 0xA:
+				printf(" ∟ TAX\n");
+				cpu.X = cpu.A;
 				break;
 			case 0xC:
 				printf(" ∟ LDY $%04X\n", word);
@@ -186,6 +226,10 @@ int main(int argc, char** argv) {
 				printf("addr: %x val: %x\n", word + cpu.Y, cpu.A);
 				cpu.PC++;
 				break;
+			case 0xA:
+				printf("TSX\n");
+				cpu.X = cpu.SP;
+				break;
 			case 0xC:
 				printf(" ∟ LDY $%04X, X\n", word);
 				cpu.Y = memory[word + cpu.X];
@@ -225,6 +269,9 @@ int main(int argc, char** argv) {
 				printf(" ∟ INX\n");
 				cpu.X++;
 				break;
+			case 0xA:
+				printf(" ∟ NOP\n");
+				break;
 			case 0xE:
 				printf(" ∟ INC $%04X\n", word);
 				memory[word]++;
@@ -252,19 +299,20 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	printf("CPU State:\n"
-			"A\t:\t0x%08X\n"
-			"X\t:\t0x%08X\n"
-			"Y\t:\t0x%08X\n"
-			"SP\t:\t0x%08X\n"
-			"P\t:\t0x%08X\n"
-			"PC\t:\t0x%016X\n\n"
-		, cpu.A, cpu.X, cpu.Y, cpu.SP, cpu.P, cpu.PC);
+	printf("\nCPU State:\n"
+		"A=$%02X "
+		"X=$%02X "
+		"Y=$%02X\n"
+		"SP=$%02X "
+		"PC=$%04X\n"
+		"NV-BDIZC\n"
+		"%08b\n\n",
+	cpu.A, cpu.X, cpu.Y, cpu.SP, cpu.PC, cpu.P);
 
 	printf("Memory State:\n");
-	for(int i = 0; i < 0xffff; i++) {
+	for(int i = 0; i < 0xffff - 0x8000; i++) {
 		if(memory[i] != 0x0) {
-			printf("0x%04X: 0x%02X (0b%08b)\n", i, memory[i], memory[i]);
+			printf("$%04X: $%02X (%%%08b)\n", i, memory[i], memory[i]);
 		}
 	}
 
