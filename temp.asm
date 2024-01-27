@@ -1,6 +1,3 @@
-LDA hello, X
-INX
-LDA hello, X
-
-.DATA
-hello: .byte "hello world", 0
+LDA #10
+LDX #$10
+LDY #%10

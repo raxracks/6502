@@ -44,6 +44,13 @@ int main(int argc, char** argv) {
 		printf("%d: 0x%02X (h_nib: 0x%X, l_nib: 0x%X)\n", cpu.PC, opcode, h_nib, l_nib);
 
 		switch(h_nib) {
+		case 0x0:
+			switch(l_nib) {
+			case 0x0:
+				printf("%c", cpu.A);
+				break;
+			}
+			break;
 		case 0x8:
 			switch(l_nib) {
 			case 0x1:

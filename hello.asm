@@ -1,5 +1,27 @@
-LDY #%00000100
-LDX #$5
-STY $10
-STY $10, X
-STY $1000
+LDX #0
+LDA hello, X
+BRK
+INX
+LDA hello, X
+BRK
+INX
+LDA hello, X
+BRK
+INX
+LDA hello, X
+BRK
+INX
+LDA hello, X
+BRK
+INX
+LDA hello, X
+BRK
+INX
+LDA hello, X
+BRK
+INX
+LDA hello, X
+BRK
+
+.DATA
+hello: .byte "hello\n", 0
