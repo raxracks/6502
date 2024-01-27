@@ -3,13 +3,13 @@
 #include <stdint.h>
 #include <assert.h>
 
-#define NEGATIVE 	1 << 7
-#define OVERFLOW 	1 << 6
-#define BREAK 		1 << 4
-#define DECIMAL 	1 << 3
-#define INTERRUPT 	1 << 2
-#define ZERO 		1 << 1
-#define CARRY 		1 << 0
+uint8_t N = 1 << 7;
+uint8_t V = 1 << 6;
+uint8_t B = 1 << 4;
+uint8_t D = 1 << 3;
+uint8_t I = 1 << 2;
+uint8_t Z = 1 << 1;
+uint8_t C = 1 << 0;
 
 typedef struct {
 	uint8_t A;
@@ -21,7 +21,23 @@ typedef struct {
 } CPU;
 
 CPU cpu = { 0 };
-uint8_t* memory; 
+uint8_t* memory;
+
+void add_flag(uint8_t flag) {
+	cpu.P |= flag;
+}
+
+void clear_flag(uint8_t flag) {
+	cpu.P &= ~flag;
+}
+
+void set_flag(uint8_t flag, int condition) {
+	if(condition == 1) {
+		add_flag(flag);
+	} else if(condition == 0) {
+		clear_flag(flag);
+	}
+}
 
 int main(int argc, char** argv) {
 	assert(argc > 1);
@@ -44,13 +60,6 @@ int main(int argc, char** argv) {
 		printf("%d: 0x%02X (h_nib: 0x%X, l_nib: 0x%X)\n", cpu.PC, opcode, h_nib, l_nib);
 
 		switch(h_nib) {
-		case 0x0:
-			switch(l_nib) {
-			case 0x0:
-				printf("%c", cpu.A);
-				break;
-			}
-			break;
 		case 0x8:
 			switch(l_nib) {
 			case 0x1:
@@ -76,6 +85,10 @@ int main(int argc, char** argv) {
 			case 0xA:
 				printf(" ∟ TXA\n");
 				cpu.A = cpu.X;
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				break;
 			case 0xC:
 				printf(" ∟ STY $%04X\n", word);
@@ -120,6 +133,10 @@ int main(int argc, char** argv) {
 			case 0x8:
 				printf(" ∟ TYA\n");
 				cpu.A = cpu.Y;
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				break;
 			case 0x9:
 				printf(" ∟ STA $%04X, Y\n", word);
@@ -142,61 +159,108 @@ int main(int argc, char** argv) {
 			case 0x0:
 				printf(" ∟ LDY #$%02X\n", one);
 				cpu.Y = one;
+
+				set_flag(N, cpu.Y & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				cpu.PC++;
 				break;
 			case 0x1:
 				printf(" ∟ LDA ($%02X, X)\n", one);
 				cpu.A = memory[memory[one + cpu.X]];
-				printf("addr: %x val: %x\n", memory[one + cpu.X], cpu.A);
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC++;
 				break;
 
 			case 0x2:
 				printf(" ∟ LDX #$%02X\n", one);
 				cpu.X = one;
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				cpu.PC++;
 				break;
 			case 0x4:
 				printf(" ∟ LDY $%02X\n", one);
 				cpu.Y = memory[one];
+
+				set_flag(N, cpu.Y & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				cpu.PC++;
 				break;
 			case 0x5:
 				printf(" ∟ LDA $%02X\n", one);
 				cpu.A = memory[one];
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC++;
 				break;
 			case 0x6:
 				printf(" ∟ LDX $%02X\n", one);
 				cpu.X = memory[one];
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				cpu.PC++;
 				break;
 			case 0x8:
 				printf(" ∟ TAY\n");
 				cpu.Y = cpu.A;
+
+				set_flag(N, cpu.Y & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				break;
 			case 0x9:
 				printf(" ∟ LDA #$%02X\n", one);
 				cpu.A = one;
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC++;
 				break;
 			case 0xA:
 				printf(" ∟ TAX\n");
 				cpu.X = cpu.A;
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				break;
 			case 0xC:
 				printf(" ∟ LDY $%04X\n", word);
 				cpu.Y = memory[word];
+
+				set_flag(N, cpu.Y & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				cpu.PC += 2;
 				break;
 			case 0xD:
 				printf(" ∟ LDA $%04X\n", word);
 				cpu.A = memory[word];
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC += 2;
 				break;
 			case 0xE:
 				printf(" ∟ LDX $%04X\n", word);
 				cpu.X = memory[word];
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				cpu.PC += 2;
 				break;
 			}
@@ -206,53 +270,81 @@ int main(int argc, char** argv) {
 			case 0x1:
 				printf(" ∟ LDA ($%02X), Y\n", one);
 				cpu.A = memory[memory[one] + cpu.Y];
-				printf("addr: %x val: %x\n", memory[one] + cpu.Y, cpu.A);
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC++;
 				break;
 			case 0x4:
 				printf(" ∟ LDY $%02X, X\n", one);
 				cpu.Y = memory[one + cpu.X];
-				printf("addr: %x val: %x\n", one + cpu.X, cpu.Y);
+
+				set_flag(N, cpu.Y & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				cpu.PC++;
 				break;
 			case 0x5:
 				printf(" ∟ LDA $%02X, X\n", one);
 				cpu.A = memory[one + cpu.X];
-				printf("addr: %x val: %x\n", one + cpu.X, cpu.A);
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC++;
 				break;
 			case 0x6:
 				printf(" ∟ LDX $%02X, Y\n", one);
 				cpu.X = memory[one + cpu.Y];
-				printf("addr: %x val: %x\n", one + cpu.Y, cpu.X);
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				cpu.PC++;
 				break;
 			case 0x9:
 				printf(" ∟ LDA $%04X, Y\n", word);
 				cpu.A = memory[word + cpu.Y];
-				printf("addr: %x val: %x\n", word + cpu.Y, cpu.A);
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC++;
 				break;
 			case 0xA:
 				printf("TSX\n");
 				cpu.X = cpu.SP;
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				break;
 			case 0xC:
 				printf(" ∟ LDY $%04X, X\n", word);
 				cpu.Y = memory[word + cpu.X];
-				printf("addr: %x val: %x\n", word + cpu.X, cpu.Y);
+
+				set_flag(N, cpu.Y & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				cpu.PC += 2;
 				break;
 			case 0xD:
 				printf(" ∟ LDA $%04X, X\n", word);
 				cpu.A = memory[word + cpu.X];
-				printf("addr: %x val: %x\n", word + cpu.X, cpu.A);
+
+				set_flag(N, cpu.A & 0x80 != 0);	
+				set_flag(Z, cpu.A == 0);
+
 				cpu.PC += 2;
 				break;
 			case 0xE:
 				printf(" ∟ LDX $%04X, Y\n", word);
 				cpu.X = memory[word + cpu.Y];
-				printf("addr: %x val: %x\n", word + cpu.Y, cpu.X);
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				cpu.PC += 2;
 				break;
 			}
@@ -262,6 +354,10 @@ int main(int argc, char** argv) {
 			case 0x8:
 				printf(" ∟ INY\n");
 				cpu.Y++;
+				
+				set_flag(N, cpu.Y & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				break;
 			}
 			break;
@@ -270,11 +366,19 @@ int main(int argc, char** argv) {
 			case 0x6:
 				printf(" ∟ INC $%02X\n", one);
 				memory[one]++;
+
+				set_flag(N, memory[one] & 0x80 != 0);	
+				set_flag(Z, memory[one] == 0);
+
 				cpu.PC++;
 				break;
 			case 0x8:
 				printf(" ∟ INX\n");
 				cpu.X++;
+
+				set_flag(N, cpu.X & 0x80 != 0);	
+				set_flag(Z, cpu.X == 0);
+
 				break;
 			case 0xA:
 				printf(" ∟ NOP\n");
@@ -282,6 +386,10 @@ int main(int argc, char** argv) {
 			case 0xE:
 				printf(" ∟ INC $%04X\n", word);
 				memory[word]++;
+
+				set_flag(N, memory[word] & 0x80 != 0);	
+				set_flag(Z, memory[word] == 0);
+
 				cpu.PC += 2;
 				break;
 			}
@@ -290,12 +398,22 @@ int main(int argc, char** argv) {
 			switch(l_nib) {
 			case 0x6:
 				printf(" ∟ INC $%02X, X\n", one);
-				memory[one + cpu.X]++;
+				uint8_t addr = one + cpu.X;
+				memory[addr]++;
+
+				set_flag(N, memory[addr] & 0x80 != 0);	
+				set_flag(Z, memory[addr] == 0);
+
 				cpu.PC++;
 				break;
 			case 0xE:
 				printf(" ∟ INC $%04X, X\n", word);
-				memory[word + cpu.X]++;
+				uint16_t addr = word + cpu.X;
+				memory[addr]++;
+				
+				set_flag(N, memory[addr] & 0x80 != 0);	
+				set_flag(Z, cpu.Y == 0);
+
 				cpu.PC += 2;
 				break;
 			}
