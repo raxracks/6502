@@ -398,21 +398,21 @@ int main(int argc, char** argv) {
 			switch(l_nib) {
 			case 0x6:
 				printf(" ∟ INC $%02X, X\n", one);
-				uint8_t addr = one + cpu.X;
-				memory[addr]++;
+				uint8_t u8_addr = one + cpu.X;
+				memory[u8_addr]++;
 
-				set_flag(N, memory[addr] & 0x80 != 0);	
-				set_flag(Z, memory[addr] == 0);
+				set_flag(N, memory[u8_addr] & 0x80 != 0);	
+				set_flag(Z, memory[u8_addr] == 0);
 
 				cpu.PC++;
 				break;
 			case 0xE:
 				printf(" ∟ INC $%04X, X\n", word);
-				uint16_t addr = word + cpu.X;
-				memory[addr]++;
+				uint16_t u16_addr = word + cpu.X;
+				memory[u16_addr]++;
 				
-				set_flag(N, memory[addr] & 0x80 != 0);	
-				set_flag(Z, cpu.Y == 0);
+				set_flag(N, memory[u16_addr] & 0x80 != 0);	
+				set_flag(Z, memory[u16_addr] == 0);
 
 				cpu.PC += 2;
 				break;

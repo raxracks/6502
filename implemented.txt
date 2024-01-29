@@ -1,23 +1,23 @@
 ==== LDA (completed) ====
 LDA #
-- LDA $ (Z)
+LDA $ (Z)
 LDA $ (A)
 LDA $, X (Z)
 LDA $, X (A)
 LDA $, Y (A)
-- LDA ($, X)
+LDA ($, X)
 LDA ($), Y
 
 ==== LDX (completed) ====
-- LDX #
-- LDX $ (Z)
+LDX #
+LDX $ (Z)
 LDX $ (A)
 LDX $, Y (Z)
 LDX $, Y (A)
 
 ==== LDY (completed) ====
-- LDY #
-- LDY $ (Z)
+LDY #
+LDY $ (Z)
 LDY $ (A)
 LDY $, X (Z)
 LDY $, X (A)
